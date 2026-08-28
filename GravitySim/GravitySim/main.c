@@ -113,10 +113,7 @@ void sphericalToCartesian(float r, float theta, float phi, vec3 out) {
 	out[1] = r * cosf(theta);             // y
 	out[2] = r * sinf(theta) * sinf(phi); // z
 }
-//void drawGrid(GLuint shaderProgram, GLuint gridVAO, size_t vertexCount);
 void drawGrid(GLuint gridVAO, size_t vertexCount);
-//float* createGridVertices(float size, int divisions, const Object* objects, size_t objectCount, size_t outVertexCount);
-//float* updateGridVertices(float* vertices, size_t vertexCount, const Object* objects, size_t objectCount);
 float* createGridVertices(float size, int divisions, size_t* outVertexCount);
 void updateGridVertices(float* output, const float* baseVertices, size_t vertexCount, const Object* sceneObjects, size_t sceneObjectsCount);
 static void simulatePhysics(double deltaTime);
@@ -225,14 +222,6 @@ void objectInit(Object *object, vec3 initPosition, vec3 initVelocity, double mas
 	free(vertices);
 }
 
-//void updateObjectPosition(Object* object) {
-//	object->position[0] += object->velocity[0] / 94.0f;
-//	object->position[1] += object->velocity[1] / 94.0f;
-//	object->position[2] += object->velocity[2] / 94.0f;
-//
-//	object->radius = powf((3.0f * object->mass / object->density) / (4.0f * (float)M_PI), 1.0f / 3.0f) / sizeRatio;
-//}
-
 void updateObjectPosition(Object* object) {
 	vec3 displacement;
 
@@ -265,20 +254,6 @@ void objectAccelerate(Object* object, float x, float y, float z) {
 	object->velocity[1] += y / 94.0f;
 	object->velocity[2] += z / 94.0f;
 }
-
-//float checkObjectCollision(const Object* object, const Object* other) {
-//	float dx = other->position[0] - object->position[0];
-//	float dy = other->position[1] - object->position[1];
-//	float dz = other->position[2] - object->position[2];
-//
-//	float distance = sqrtf(dx * dx + dy * dy + dz * dz);
-//
-//	if (other->radius + object->radius > distance) {
-//		return -0.2f;
-//	}
-//
-//	return 1.0f;
-//}
 
 float checkObjectCollision(const Object* a, const Object* b) {
 	const double dx = (double)b->position[0] - a->position[0];
@@ -324,13 +299,6 @@ int main() {
 	objectInit(&objects[objectCount++], (vec3) { 5000.0f, 650.0f, -350.0f }, (vec3) { 0.0f, 0.0f, -1500.0f }, 5.97219e22, 5515.0f, (vec4) { 0.0f, 1.0f, 1.0f, 1.0f }, false);
 	objectInit(&objects[objectCount++], (vec3) { 0.0f, 0.0f, -350.0f }, (vec3) { 0.0f, 0.0f, 0.0f }, 1.989e25, 5515.0f, (vec4) { 1.0f, 0.929f, 0.176f, 1.0f }, false);
 
-	//// Vertices
-	//size_t gridVertexCount = 0;
-
-	//float* gridVertices = createGridVertices(20000.0f, 25, objects, objectCount, &gridVertexCount);
-
-	//createVBOVAO(&gridVAO, &gridVBO, gridVertices, gridVertexCount);
-
 	size_t gridVertexCount = 0;
 
 	float* baseGridVertices = createGridVertices(20000.0f, 25, &gridVertexCount);
@@ -350,130 +318,6 @@ int main() {
 
 	double previousTime = glfwGetTime();
 	double accumulator = 0.0;
-
-	//while (!glfwWindowShouldClose(window) && isRunning) {
-	//	float currentFrame = (float)glfwGetTime();
-
-	//	deltaTime = currentFrame - lastFrame;
-	//	lastFrame = currentFrame;
-
-	//	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//	updateCamera(shaderProgram, cameraPosition);
-
-	//	// Increase mass while initialising
-	//	if (objectCount > 0 && objects[objectCount - 1].isInitializing) {
-	//		Object* object = &objects[objectCount - 1];
-
-	//		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS) {
-	//			// Increase mass by 1% per second
-	//			object->mass *= 1.0 + 1.0 * deltaTime;
-
-	//			// Update radius
-	//			object->radius = (float)(pow((3.0 * object->mass / object->density) / (4.0 * M_PI), 1.0 / 3.0) / sizeRatio);
-
-	//			updateObjectVertices(object);
-	//		}
-	//	}
-
-	//	// Draw grid
-	//	glUseProgram(shaderProgram);
-
-	//	glUniform4f(objectColorLocation, 1.0f, 1.0f, 1.0f, 0.25f);
-	//	glUniform1i(isGridLocation, 1);
-	//	glUniform1i(glowLocation, 0);
-
-	//	// updateGridVertices() returns new array and update vertex count
-	//	//float* newGridVertices = updateGridVertices(gridVertices, &gridVertexCount, objects, objectCount);
-
-	//	//if (newGridVertices != gridVertices) {
-	//	//	free(gridVertices);
-	//	//	gridVertices = newGridVertices;
-	//	//}
-	//	/*updateGridVertices(gridVertices, gridVertexCount, objects, objectCount);
-
-	//	glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-	//	glBufferData(GL_ARRAY_BUFFER, gridVertexCount * sizeof(float), gridVertices, GL_DYNAMIC_DRAW);*/
-
-	//	updateGridVertices(gridVertices, baseGridVertices, gridVertexCount, objects, objectCount);
-
-	//	glBindBuffer(GL_ARRAY_BUFFER, gridVBO);
-
-	//	glBufferSubData(GL_ARRAY_BUFFER, 0, gridVertexCount * 3 * sizeof(float), gridVertices);
-
-	//	drawGrid(shaderProgram, gridVAO, gridVertexCount);
-
-	//	// Draw objects
-	//	for (size_t i = 0; i < objectCount; ++i) {
-	//		Object* object = &objects[i];
-
-	//		glUniform4f(objectColorLocation, object->color[0], object->color[1], object->color[2], object->color[3]);
-
-	//		// Calculate the gravitational interaction with every other object
-	//		for (size_t j = 0; j < objectCount; ++j) {
-	//			Object* object2 = &objects[j];
-
-	//			if (object2 != object && !object->isInitializing && !object2->isInitializing) {
-	//				float dx = object2->position[0] - object->position[0];
-	//				float dy = object2->position[1] - object->position[1];
-	//				float dz = object2->position[2] - object->position[2];
-	//				float distance = sqrtf(dx * dx + dy * dy + dz * dz);
-
-	//				if (distance > 0.0f) {
-	//					// direction vector
-	//					vec3 direction = { dx / distance, dy / distance, dz / distance };
-
-	//					distance *= 1000.0f;
-
-	//					double Gforce = (G * object->mass * object2->mass) / (distance * distance);
-
-	//					float acceleration1 = (float)(Gforce / object->mass);
-	//					vec3 acceleration = { direction[0] * acceleration1, direction[1] * acceleration1, direction[2] * acceleration1 };
-
-	//					if (!isPaused) {
-	//						objectAccelerate(object, acceleration[0], acceleration[1], acceleration[2]);
-
-	//						// Collision
-	//						float collisionFactor = checkObjectCollision(object, object2);
-	//						glm_vec3_scale(object->velocity, collisionFactor, object->velocity);
-	//						printf("radius: %f\n", object->radius);
-	//					}
-	//				}
-	//			}
-	//		}
-
-	//		// Initialising object radius
-	//		if (object->isInitializing) {
-	//			object->radius = (float)(pow((3.0 * object->mass / object->density) / (4.0 * M_PI), 1.0 / 3.0) / sizeRatio);
-	//			updateObjectVertices(object);
-	//		}
-
-	//		if (!isPaused) {
-	//			updateObjectPosition(object);
-	//		}
-
-	//		// Model matrix
-	//		mat4 model;
-
-	//		glm_mat4_identity(model);
-
-	//		glm_translate(model, object->position);
-
-	//		glUniformMatrix4fv(modelLocation, 1, GL_FALSE, (const GLfloat*)model);
-
-	//		glUniform1i(isGridLocation, 0);
-
-	//		glUniform1i(glowLocation, object->isGlow ? 1 : 0);
-
-	//		// Draw sphere
-	//		glBindVertexArray(object->VAO);
-
-	//		glDrawArrays(GL_TRIANGLES, 0, (GLsizei)(object->vertexCount / 3));
-	//	}
-
-	//	glfwSwapBuffers(window);
-	//	glfwPollEvents();
-	//}
 
 	while (!glfwWindowShouldClose(window) && isRunning) {
 		const double currentTime = glfwGetTime();
@@ -679,92 +523,6 @@ void updateCamera(GLuint shaderProgram, vec3 cameraPosition) {
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, (float*)view);
 }
 
-//void keyCallback(GLFWwindow* window, int key, int action, int mods) {
-//	float cameraSpeed = 10000.0f * deltaTime;
-//	bool shiftPressed = (mods & GLFW_MOD_SHIFT) != 0;
-//
-//	// Camera movement
-//	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-//		glm_vec3_muladds(cameraFront, cameraSpeed, cameraPosition);
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-//		glm_vec3_muladds(cameraFront, -cameraSpeed, cameraPosition);
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-//		vec3 right;
-//		glm_vec3_cross(cameraFront, cameraUp, right);
-//		glm_vec3_normalize(right);
-//		glm_vec3_muladds(right, -cameraSpeed, cameraPosition);
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-//		vec3 right;
-//		glm_vec3_cross(cameraFront, cameraUp, right);
-//		glm_vec3_normalize(right);
-//		glm_vec3_muladds(right, cameraSpeed, cameraPosition);
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-//		glm_vec3_muladds(cameraUp, cameraSpeed, cameraPosition);
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-//		glm_vec3_muladds(cameraUp, -cameraSpeed, cameraPosition);
-//	}
-//
-//	// Pause
-//	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_PRESS) {
-//		isPaused = true;
-//	}
-//
-//	if (glfwGetKey(window, GLFW_KEY_K) == GLFW_RELEASE) {
-//		isPaused = false;
-//	}
-//
-//	// Quit
-//	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) {
-//		glfwSetWindowShouldClose(window, GLFW_TRUE);
-//		isRunning = false;
-//	}
-//
-//	// Don't try to access objects[-1]
-//	if (objectCount == 0) {
-//		return;
-//	}
-//
-//	// Get the last object
-//	Object* lastObject = &objects[objectCount - 1];
-//
-//	// Only allow movement while the object is initializing
-//	if (lastObject->isInitializing) {
-//		if (key == GLFW_KEY_UP && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-//			if (!shiftPressed) {
-//				lastObject->position[1] += lastObject->radius * 0.2f;
-//			} else {
-//				lastObject->position[2] += lastObject->radius * 0.2f;
-//			}
-//		}
-//
-//		if (key == GLFW_KEY_DOWN && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-//			if (!shiftPressed) {
-//				lastObject->position[1] -= lastObject->radius * 0.2f;
-//			} else {
-//				lastObject->position[2] -= lastObject->radius * 0.2f;
-//			}
-//		}
-//
-//		if (key == GLFW_KEY_RIGHT && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-//			lastObject->position[0] += lastObject->radius * 0.2f;
-//		}
-//
-//		if (key == GLFW_KEY_LEFT && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
-//			lastObject->position[0] -= lastObject->radius * 0.2f;
-//		}
-//	}
-//}
-
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
 	(void)scancode;
 
@@ -858,34 +616,6 @@ static void processContinuousInput(GLFWwindow* window, float deltaTime) {
 	}
 }
 
-//void mouseCallback(GLFWwindow* window, double xPos, double yPos) {
-//	float xOffset = xPos - lastX;
-//	float yOffset = lastY - yPos;
-//	lastX = xPos;
-//	lastY = yPos;
-//
-//	float sensitivity = 0.1f;
-//	xOffset *= sensitivity;
-//	yOffset *= sensitivity;
-//
-//	yaw += xOffset;
-//	pitch += yOffset;
-//
-//	if (pitch > 89.0f) pitch = 89.0f;
-//	if (pitch < -89.0f) pitch = -89.0f;
-//
-//	float yawRad = glm_rad(yaw);
-//	float pitchRad = glm_rad(pitch);
-//
-//	vec3 front = { cosf(yawRad) * cosf(pitchRad),
-//				   sinf(pitchRad),
-//				   sinf(yawRad) * cosf(pitchRad)
-//	};
-//
-//	glm_vec3_normalize(front);
-//	glm_vec3_copy(front, cameraFront);
-//}
-
 void mouseCallback(GLFWwindow* window, double xPosition, double yPosition) {
 	(void)window;
 
@@ -958,15 +688,6 @@ void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
 	}
 }
 
-//void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
-//	float cameraSpeed = 250000.0f * deltaTime;
-//	if (yOffset > 0) {
-//		glm_vec3_muladds(cameraFront, cameraSpeed, cameraPosition);
-//	} else if (yOffset < 0) {
-//		glm_vec3_muladds(cameraFront, -cameraSpeed, cameraPosition);
-//	}
-//}
-
 void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 	(void)window;
 	(void)xOffset;
@@ -975,22 +696,6 @@ void scrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
 
 	glm_vec3_muladds(cameraFront, (float)yOffset * distancePerStep, cameraPosition);
 }
-
-//void drawGrid(GLuint shaderProgram, GLuint gridVAO, size_t vertexCount) {
-//	glUseProgram(shaderProgram);
-//	
-//	mat4 model;
-//	glm_mat4_identity(model);
-//
-//	GLint modelLocation = glGetUniformLocation(shaderProgram, "model");
-//	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, (const GLfloat*)model);
-//
-//	glBindVertexArray(gridVAO);
-//	glPointSize(5.0f);
-//	//glDrawArrays(GL_LINES, 0, (GLsizei)(vertexCount / 3));
-//	glDrawArrays(GL_LINES, 0, (GLsizei)vertexCount);
-//	glBindVertexArray(0);
-//}
 
 static void simulatePhysics(double deltaTime) {
 	static double acceleration[MAX_OBJECTS][3];
@@ -1061,78 +766,6 @@ void drawGrid(GLuint gridVAO, size_t vertexCount) {
 	glBindVertexArray(0);
 }
 
-//float* createGridVertices(float size, int divisions, const Object* objects, size_t objectCount, size_t* outVertexCount) {
-//	float step = size / divisions;
-//	float halfSize = size / 2.0f;
-//
-//	/* Number of vertices
-//	 * X axis: (divisions + 1) * divisions * 2
-//	 * Y axis: (divisions + 1) * divisions * 2
-//	 */
-//	//size_t vertexCount = ((size_t)(divisions + 1) * divisions * 2) + ((size_t)(divisions + 1) * divisions * 2);
-//	size_t vertexCount = ((size_t)divisions * divisions * 2) + ((size_t)(divisions + 1) * divisions * 2);
-//
-//	// Each vertex has 3 floats
-//	size_t floatCount = vertexCount * 3;
-//
-//	float* vertices = malloc(floatCount * sizeof(float));
-//
-//	if (vertices == NULL) {
-//		*outVertexCount = 0;
-//		return NULL;
-//	}
-//
-//	size_t index = 0;
-//
-//	// X axis
-//	for (int yStep = 3; yStep <= 3; ++yStep) {
-//		float y = -halfSize * 0.3f + yStep * step;
-//
-//		for (int zStep = 0; zStep < divisions; ++zStep) {
-//			float z = -halfSize + zStep * step;
-//
-//			for (int xStep = 0; xStep < divisions; ++xStep) {
-//				float xStart = -halfSize + xStep * step;
-//				float xEnd = xStart + step;
-//
-//				vertices[index++] = xStart;
-//				vertices[index++] = y;
-//				vertices[index++] = z;
-//
-//				vertices[index++] = xEnd;
-//				vertices[index++] = y;
-//				vertices[index++] = z;
-//			}
-//		}
-//	}
-//
-//	// Z axis
-//	for (int xStep = 0; xStep <= divisions; ++xStep) {
-//		float x = -halfSize + xStep * step;
-//
-//		for (int yStep = 3; yStep <= 3; ++yStep) {
-//			float y = -halfSize * 0.3f + yStep * step;
-//
-//			for (int zStep = 0; zStep < divisions; ++zStep) {
-//				float zStart = -halfSize + zStep * step;
-//				float zEnd = zStart + step;
-//
-//				vertices[index++] = x;
-//				vertices[index++] = y;
-//				vertices[index++] = zStart;
-//
-//				vertices[index++] = x;
-//				vertices[index++] = y;
-//				vertices[index++] = zEnd;
-//			}
-//		}
-//	}
-//
-//	*outVertexCount = vertexCount;
-//
-//	return vertices;
-//}
-
 float* createGridVertices(float size, int divisions, size_t* outVertexCount) {
 	(void)objects;
 	(void)objectCount;
@@ -1144,7 +777,6 @@ float* createGridVertices(float size, int divisions, size_t* outVertexCount) {
 	 * X axis: divisions * divisions * 2 vertices
 	 * Y axis: (divisions + 1) * divisions * 2 vertices
 	 */
-	 //size_t vertexCount = ((size_t)(divisions + 1) * divisions * 2) + ((size_t)(divisions + 1) * divisions * 2);
 	size_t vertexCount = ((size_t)divisions * divisions * 2) + ((size_t)(divisions + 1) * divisions * 2);
 
 	// Each vertex has 3 floats
@@ -1207,74 +839,6 @@ float* createGridVertices(float size, int divisions, size_t* outVertexCount) {
 
 	return vertices;
 }
-
-//float* updateGridVertices(float* vertices, size_t vertexCount, const Object* objects, size_t objectCount) {
-//	// Calculate cente of mass
-//	float totalMass = 0.0f;
-//	float comY = 0.0f;
-//
-//	for (size_t i = 0; i < objectCount; ++i) {
-//		const Object* object = &objects[i];
-//
-//		if (object->isInitializing) {
-//			continue;
-//		}
-//
-//		comY += object->mass * object->position[1];
-//		totalMass += object->mass;
-//	}
-//
-//	if (totalMass > 0.0f) {
-//		comY /= totalMass;
-//	}
-//
-//	// Find original maximum Y
-//	float originalMaxY = -INFINITY;
-//
-//	for (size_t i = 0; i < vertexCount; i += 3) {
-//		if (vertices[i + 1] > originalMaxY) {
-//			originalMaxY = vertices[i + 1];
-//		}
-//	}
-//
-//	float verticalShift = comY - originalMaxY;
-//	printf("Vertical shift: %f | comY: %f | originalMaxY: %f\n", verticalShift, comY, originalMaxY);
-//
-//	// Bend space around objects
-//	for (size_t i = 0; i < vertexCount; i += 3) {
-//		float vertexX = vertices[i];
-//		float vertexY = vertices[i + 1];
-//		float vertexZ = vertices[i + 2];
-//
-//		float totalDisplacementY = 0.0f;
-//
-//		for (size_t j = 0; j < objectCount; ++j) {
-//			const Object* object = &objects[j];
-//
-//			float toObjectX = object->position[0] - vertexX;
-//			float toObjectY = object->position[1] - vertexY;
-//			float toObjectZ = object->position[2] - vertexZ;
-//
-//			float distance = sqrtf(toObjectX * toObjectX + toObjectY * toObjectY + toObjectZ * toObjectZ);
-//
-//			float distanceM = distance * 1000.0f;
-//
-//			float rs = (2.0f * (float)G * object->mass) / (c * c);
-//
-//			float value = rs * (distanceM - rs);
-//
-//			// prevent sqrtf() from receiving a negative value
-//			if (value > 0.0f) {
-//				float dz = 2.0f * sqrtf(value);
-//				totalDisplacementY += dz * 2.0f;
-//			}
-//		}
-//
-//		vertices[i + 1] = totalDisplacementY - fabsf(verticalShift);
-//	}
-//
-//	return vertices;
-//}
 
 void updateGridVertices(float* output, const float* baseVertices, size_t vertexCount, const Object* sceceObjects, size_t sceneObjectCount) {
 	for (size_t vertex = 0; vertex < vertexCount; ++vertex) {
